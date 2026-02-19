@@ -1,0 +1,6 @@
+@ApiMoniEquipamentosPesados_HostAddress = http://localhost:5027
+
+GET {{ApiMoniEquipamentosPesados_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

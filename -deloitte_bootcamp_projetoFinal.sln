@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MoniEquipamentosPesados", "MoniEquipamentosPesados", "{31AA40E8-5C05-492C-2D66-0B42D4E4F8E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiMoniEquipamentosPesados", "MoniEquipamentosPesados\ApiMoniEquipamentosPesados.csproj", "{F5C6923A-9F04-10BD-25AA-CB93348095BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5C6923A-9F04-10BD-25AA-CB93348095BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C6923A-9F04-10BD-25AA-CB93348095BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5C6923A-9F04-10BD-25AA-CB93348095BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5C6923A-9F04-10BD-25AA-CB93348095BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F5C6923A-9F04-10BD-25AA-CB93348095BC} = {31AA40E8-5C05-492C-2D66-0B42D4E4F8E3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3BF43BC6-B84D-421B-A947-1EDC1C30BC7F}
+	EndGlobalSection
+EndGlobal
