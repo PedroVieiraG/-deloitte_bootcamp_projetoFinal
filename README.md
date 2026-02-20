@@ -23,7 +23,7 @@ Uma API desenvolvida em **.NET 10** para gerenciar o ciclo de vida e a manutenç
 
 ### Pré-requisitos
 * [Docker Desktop](https://www.docker.com/products/docker-desktop) instalado e rodando.
-* [.NET 10 SDK](https://dotnet.microsoft.com/download) (caso deseje rodar o código fora do container).
+* [.NET 10 SDK](https://dotnet.microsoft.com/download) 
 
 ### Passo a Passo (Via Docker Compose)
 1. Clone este repositório:
