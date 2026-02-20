@@ -1,6 +1,6 @@
 # API - Monitoramento de Equipamentos Pesados
 
-Uma API desenvolvida em **.NET 10** para gerenciar o ciclo de vida e a manutenção de equipamentos de mina (caminhões, escavadeiras, perfuratrizes, etc.).
+Uma API desenvolvida em **.NET 10** para gerenciar o ciclo de vida e a manutenção de equipamentos de minas (caminhões, escavadeiras, perfuratrizes, etc.).
 
 ## Tecnologias Utilizadas
 * **C# / .NET 10**
