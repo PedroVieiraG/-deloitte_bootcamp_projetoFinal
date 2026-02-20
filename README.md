@@ -30,6 +30,7 @@ Uma API desenvolvida em **.NET 10** para gerenciar o ciclo de vida e a manutenç
    ```bash
    git clone https://github.com/PedroVieiraG/-deloitte_bootcamp_projetoFinal.git
 2. Depois:
+    ```bash
    docker-compose up -d --build
 
    
