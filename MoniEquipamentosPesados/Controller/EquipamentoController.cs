@@ -1,7 +1,7 @@
 using ApiMoniEquipamentosPesados.Data;
 using ApiMoniEquipamentosPesados.DTOs;
 using ApiMoniEquipamentosPesados.Models;
-using ApiMoniEquipamentosPesados.Exceptions; // 👈 Necessário para os novos throws
+using ApiMoniEquipamentosPesados.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
