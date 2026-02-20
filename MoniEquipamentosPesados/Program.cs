@@ -1,6 +1,5 @@
 using ApiMoniEquipamentosPesados.Data;
 using Microsoft.EntityFrameworkCore;
-using ApiMoniEquipamentosPesados.Exceptions;
 using ApiMoniEquipamentosPesados.GlobalExceptions;
 
 var builder = WebApplication.CreateBuilder(args);
