@@ -125,4 +125,115 @@ public class EquipamentosControllerTests
 
         Assert.Equal("O equipamento com ID 99 não foi encontrado.", exception.Message);
     }
+
+    [Fact]
+    public async Task GetAll_DeveRetornarListaComPaginacao()
+    {
+
+        var context = GetDbContext();
+        context.Equipamentos.Add(new Equipamento { Id = 1, Codigo = "EQ-01", Modelo = "Teste 1" });
+        context.Equipamentos.Add(new Equipamento { Id = 2, Codigo = "EQ-02", Modelo = "Teste 2" });
+        await context.SaveChangesAsync();
+
+        var controller = new EquipamentosController(context);
+
+        var result = await controller.GetAll(page: 1, pageSize: 10);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value); 
+    }
+
+    [Fact]
+    public async Task Update_DeveAtualizarEquipamento_QuandoDadosForemValidos()
+    {
+       
+        var context = GetDbContext();
+        context.Equipamentos.Add(new Equipamento 
+        { 
+            Id = 1, 
+            Codigo = "TRATOR-01", 
+            Modelo = "Modelo Antigo",
+            Horimetro = 500
+        });
+        await context.SaveChangesAsync();
+
+        var controller = new EquipamentosController(context);
+        
+        var dtoAtualizado = new ApiMoniEquipamentosPesados.DTOs.EquipamentoDto
+        {
+            Codigo = "TRATOR-01",
+            Modelo = "Modelo Novo", 
+            Tipo = TipoEquipamento.Trator,
+            Horimetro = 600
+        };
+
+      
+        var result = await controller.Update(1, dtoAtualizado);
+
+        Assert.IsType<NoContentResult>(result);
+        
+        var equipamentoSalvo = await context.Equipamentos.FindAsync(1);
+        Assert.Equal("Modelo Novo", equipamentoSalvo!.Modelo);
+        Assert.Equal(600, equipamentoSalvo.Horimetro);
+    }
+
+    [Fact]
+    public async Task AlterarStatus_DeveModificarStatus_QuandoStatusForDiferente()
+    {
+        var context = GetDbContext();
+        context.Equipamentos.Add(new Equipamento 
+        { 
+            Id = 1, 
+            Codigo = "PERF-01", 
+            Modelo = "Perfuratriz",
+            StatusOperacional = StatusOperacional.Operacional // Começa Operacional
+        });
+        await context.SaveChangesAsync();
+
+        var controller = new EquipamentosController(context);
+
+        var result = await controller.AlterarStatus(1, StatusOperacional.EmManutencao);
+
+        Assert.IsType<OkObjectResult>(result);
+        
+        var equipamentoSalvo = await context.Equipamentos.FindAsync(1);
+        Assert.Equal(StatusOperacional.EmManutencao, equipamentoSalvo!.StatusOperacional);
+    }
+
+    [Fact]
+    public async Task GetManutencoesDoEquipamento_DeveRetornarManutencoesVinculadas()
+    {
+        var context = GetDbContext();
+        context.Equipamentos.Add(new Equipamento { Id = 1, Codigo = "CAM-01", Modelo = "Caminhão" });
+        
+        context.Manutencoes.Add(new Manutencao { Id = 1, EquipamentoId = 1, Descricao = "Revisão", Status = StatusManutencao.Concluida });
+        context.Manutencoes.Add(new Manutencao { Id = 2, EquipamentoId = 1, Descricao = "Pneu", Status = StatusManutencao.EmAndamento });
+        await context.SaveChangesAsync();
+
+        var controller = new EquipamentosController(context);
+
+        var result = await controller.GetManutencoesDoEquipamento(1);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var listaManutencoes = Assert.IsAssignableFrom<IEnumerable<Manutencao>>(okResult.Value);
+        Assert.Equal(2, listaManutencoes.Count()); // Garante que achou as 2 manutenções
+    }
+
+    [Fact]
+    public async Task ObterResumoDashboard_DeveRetornarOkComCalculoDeFrota()
+    {
+        
+        var context = GetDbContext();
+        
+        context.Equipamentos.Add(new Equipamento { Id = 1, Codigo = "EQ-1", Modelo = "T1", StatusOperacional = StatusOperacional.Operacional });
+        context.Equipamentos.Add(new Equipamento { Id = 2, Codigo = "EQ-2", Modelo = "T2", StatusOperacional = StatusOperacional.EmManutencao });
+        await context.SaveChangesAsync();
+
+        var controller = new EquipamentosController(context);
+
+        var result = await controller.ObterResumoDashboard();
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value);
+    }
 }
