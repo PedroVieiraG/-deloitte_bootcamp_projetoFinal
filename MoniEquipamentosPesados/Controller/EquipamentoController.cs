@@ -1,6 +1,7 @@
 using ApiMoniEquipamentosPesados.Data;
 using ApiMoniEquipamentosPesados.DTOs;
 using ApiMoniEquipamentosPesados.Models;
+using ApiMoniEquipamentosPesados.Exceptions; // 👈 Necessário para os novos throws
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ namespace ApiMoniEquipamentosPesados.Controller;
 [Route("api/[controller]")]
 public class EquipamentosController(AppDbContext context) : ControllerBase
 {
-    // --- 1. DASHBOARD ---
+    // DASHBOARD 
     [HttpGet("dashboard")]
     public async Task<IActionResult> ObterResumoDashboard()
     {
@@ -35,7 +36,7 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
         var codigoTrimmed = dto.Codigo.Trim();
 
         if (await context.Equipamentos.AnyAsync(e => e.Codigo == codigoTrimmed))
-            return Conflict("Já existe um equipamento com este código.");
+            throw new RegraDeNegocioException("Já existe um equipamento cadastrado com este código.");
 
         var equipamento = new Equipamento
         {
@@ -75,18 +76,24 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var equipamento = await context.Equipamentos.FindAsync(id);
-        return equipamento == null ? NotFound() : Ok(equipamento);
+        
+        if (equipamento == null) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
+            
+        return Ok(equipamento);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] EquipamentoDto dto)
     {
         var equipamento = await context.Equipamentos.FindAsync(id);
-        if (equipamento == null) return NotFound();
+        
+        if (equipamento == null) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
 
         var codigoTrimmed = dto.Codigo.Trim();
         if (equipamento.Codigo != codigoTrimmed && await context.Equipamentos.AnyAsync(e => e.Codigo == codigoTrimmed))
-            return Conflict("Já existe outro equipamento com este código.");
+            throw new RegraDeNegocioException("Já existe outro equipamento cadastrado com este código.");
 
         equipamento.Codigo = codigoTrimmed;
         equipamento.Tipo = dto.Tipo;
@@ -104,12 +111,15 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var equipamento = await context.Equipamentos.FindAsync(id);
-        if (equipamento == null) return NotFound();
+        
+        if (equipamento == null) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
+
         bool temManutencaoConcluida = await context.Manutencoes
             .AnyAsync(m => m.EquipamentoId == id && m.Status == StatusManutencao.Concluida);
         
         if (temManutencaoConcluida)
-            return StatusCode(409, "Não é possível remover. Existem manutenções concluídas associadas.");
+            throw new RegraDeNegocioException("Não é possível remover. Existem manutenções concluídas associadas a este equipamento.");
 
         context.Equipamentos.Remove(equipamento);
         await context.SaveChangesAsync();
@@ -121,10 +131,12 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
     public async Task<IActionResult> AtualizarHorimetro(int id, [FromBody] decimal novoHorimetro)
     {
         var equipamento = await context.Equipamentos.FindAsync(id);
-        if (equipamento == null) return NotFound("Equipamento não encontrado.");
+        
+        if (equipamento == null) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
 
         if (novoHorimetro < equipamento.Horimetro)
-            return BadRequest("O novo horímetro não pode ser menor que o atual.");
+            throw new RegraDeNegocioException("O novo horímetro não pode ser menor que o atual.");
 
         equipamento.Horimetro = novoHorimetro;
         await context.SaveChangesAsync();
@@ -136,10 +148,12 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
     public async Task<IActionResult> AlterarStatus(int id, [FromQuery] StatusOperacional novoStatus)
     {
         var equipamento = await context.Equipamentos.FindAsync(id);
-        if (equipamento == null) return NotFound();
+        
+        if (equipamento == null) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
 
         if (equipamento.StatusOperacional == novoStatus)
-            return BadRequest($"O equipamento já está no status {novoStatus}.");
+            throw new RegraDeNegocioException($"O equipamento já se encontra no status {novoStatus}.");
 
         equipamento.StatusOperacional = novoStatus;
         await context.SaveChangesAsync();
@@ -151,7 +165,9 @@ public class EquipamentosController(AppDbContext context) : ControllerBase
     public async Task<IActionResult> GetManutencoesDoEquipamento(int id)
     {
         var existe = await context.Equipamentos.AnyAsync(e => e.Id == id);
-        if (!existe) return NotFound("Equipamento não encontrado.");
+        
+        if (!existe) 
+            throw new NaoEncontradoException($"O equipamento com ID {id} não foi encontrado.");
 
         var manutencoes = await context.Manutencoes
             .Where(m => m.EquipamentoId == id)
